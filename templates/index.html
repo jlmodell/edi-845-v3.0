@@ -1,0 +1,343 @@
+{% extends "base.html" %} {% block content %}
+<h2>ISA Line Generator</h2>
+
+<!-- Output Textbox -->
+<textarea id="output" rows="25" cols="130" readonly></textarea>
+<br /><br />
+
+<!-- Disabled Generated IDs -->
+<div
+  style="
+    display: grid;
+    grid-template-columns: repeat(3, minmax(100px, 1fr));
+    gap: 1rem;
+    width: 75%;
+    box-sizing: border-box;
+    padding: 1rem;
+  "
+>
+  <div>
+    <label for="isaID">ISA ID:</label>
+    <input type="text" id="isaID" disabled />
+    <br /><br />
+  </div>
+  <div>
+    <label for="gsID">GS ID:</label>
+    <input type="text" id="gsID" disabled />
+    <br /><br />
+  </div>
+
+  <div>
+    <label for="stID">ST ID:</label>
+    <input type="text" id="stID" disabled />
+    <br /><br />
+  </div>
+</div>
+
+<!-- <div
+  style="
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 70%;
+    gap: 1rem;
+  "
+>
+  <label for="currentDateTime">Current Date/Time</label>
+  <input type="datetime-local" id="currentDateTime" />
+</div> -->
+
+<!-- Input Form -->
+<form
+  style="
+    display: grid;
+    grid-template-columns: repeat(2, minmax(100px, 1fr));
+    gap: 1rem;
+    width: 75%;
+    box-sizing: border-box;
+    padding: 1rem;
+  "
+  id="ediForm"
+>
+  <!-- Sender Qualifier and ID-->
+  <div
+    style="
+      display: grid;
+      grid-column: span 2;
+      grid-template-columns: repeat(2, minmax(150px, 1fr));
+      gap: 1rem;
+      width: 100%;
+      box-sizing: border-box;
+      padding: 1rem;
+    "
+  >
+    <div style="display: flex; justify-items: center; align-items: center">
+      <label for="senderQualifier">Sender Qualifier:</label>
+      <select id="senderQualifier" name="senderQualifier">
+        <option value="01">01</option>
+        <option value="ZZ">ZZ</option>
+      </select>
+    </div>
+    <div style="display: flex; justify-items: center; align-items: center">
+      <label for="senderId">Sender ID:</label>
+      <select id="senderId" name="senderId">
+        <option value="002418234T">002418234T (Busse)</option>
+        <option value="002418234">002418234 (Busse)</option>
+      </select>
+    </div>
+  </div>
+
+  <!-- Receiver Qualifer and ID -->
+  <div
+    style="
+      display: grid;
+      grid-column: span 2;
+      grid-template-columns: repeat(2, minmax(150px, 1fr));
+      gap: 1rem;
+      width: 100%;
+      box-sizing: border-box;
+      padding: 1rem;
+    "
+  >
+    <div style="display: flex; justify-items: center; align-items: center">
+      <label for="receiverQualifier">Receiver Qualifier:</label>
+      <select id="receiverQualifier" name="receiverQualifier">
+        <option value="01">01</option>
+        <option value="ZZ">ZZ</option>
+      </select>
+    </div>
+
+    <div style="display: flex; justify-items: center; align-items: center">
+      <label for="receiverId">Receiver ID:</label>
+      <input
+        type="text"
+        id="receiverId"
+        name="receiverId"
+        list="receiverIds"
+        autocomplete="on"
+        placeholder="Select or type Receiver ID"
+      />
+      <datalist id="receiverIds">
+        <option value="943561654">Cardinal (943561654)</option>
+        <option value="023904428BT">McKesson (023904428BT)</option>
+      </datalist>
+    </div>
+  </div>
+
+  <!-- BPA -->
+  <div
+    style="
+      display: grid;
+      grid-column: span 2;
+      grid-template-columns: repeat(2, minmax(150px, 1fr));
+      gap: 1rem;
+      width: 25%;
+      box-sizing: border-box;
+      padding: 1rem;
+    "
+  >
+    <label for="bpa">BPA:</label>
+    <select id="bpa" name="bpa">
+      <option value="00">Original Contract</option>
+      <option value="04">Change</option>
+    </select>
+  </div>
+
+  <!-- Contract -->
+  <div
+    style="
+      display: grid;
+      grid-column: span 2;
+      grid-template-columns: repeat(2, minmax(150px, 1fr));
+      gap: 1rem;
+      width: 75%;
+      box-sizing: border-box;
+      padding: 1rem;
+    "
+  >
+    <div
+      style="
+        display: flex;
+        gap: 2px;
+        justify-items: center;
+        align-items: center;
+      "
+    >
+      <label for="contract">Contract:</label>
+      <input type="text" id="contract" name="contract" />
+    </div>
+
+    <div
+      style="
+        display: grid;
+        grid-template-columns: repeat(2, minmax(200px, 1fr));
+        gap: 1rem;
+        width: 100%;
+        box-sizing: border-box;
+        padding: 1rem;
+      "
+    >
+      <div
+        style="
+          display: flex;
+          gap: 2px;
+          justify-items: center;
+          align-items: center;
+        "
+      >
+        <label for="contractStart">Effective:</label>
+        <input type="date" id="contractStart" />
+      </div>
+      <div
+        style="
+          display: flex;
+          gap: 2px;
+          justify-items: center;
+          align-items: center;
+        "
+      >
+        <label for="contractEnd">Expiration:</label>
+        <input type="date" id="contractEnd" />
+      </div>
+    </div>
+  </div>
+
+  <!-- N1/N3/N4 -->
+  <div
+    style="
+      display: grid;
+      grid-column: span 2;
+      grid-template-columns: repeat(10, minmax(10%, 1fr));
+      gap: 2rem;
+      width: 100%;
+      box-sizing: border-box;
+      padding: 1rem;
+    "
+  >
+    <div
+      style="
+        display: flex;
+        justify-items: center;
+        align-items: center;
+        grid-column: span 2;
+      "
+    >
+      <label for="gpoOrEndUser">GPO or End User:</label>
+      <select id="gpoOrEndUser" name="gpoOrEndUser">
+        <option value="BG">GPO</option>
+        <option value="EB">End User</option>
+      </select>
+    </div>
+    <div
+      style="
+        display: flex;
+        justify-items: center;
+        align-items: center;
+        grid-column: span 2;
+      "
+    >
+      <label for="addChangeDelete">Add/Change/Delete:</label>
+      <select id="addChangeDelete" name="addChangeDelete">
+        <option value="A">Add</option>
+        <option value="C">Change</option>
+        <option value="D">Delete</option>
+      </select>
+    </div>
+
+    <div
+      style="
+        display: flex;
+        flex-direction: column;
+        gap: 2px;
+        width: 75%;
+        justify-items: center;
+        align-items: center;
+        grid-column: span 6;
+      "
+    >
+      <div style="display: flex; justify-items: center; align-items: end">
+        <label for="endUsers">End Users:</label>
+        <textarea id="endUsers" rows="10" cols="40"></textarea>
+      </div>
+      <div style="font-size: smaller">
+        <p>@ = same as contract</p>
+        <p>name,effective,expiration[,id,address,city,state,zip]</p>
+        <p>dates are YYYY-MM-DD format strictly</p>
+        <p>eg) premier,2024-12-01,2025-11-30</p>
+        <p>eg2) premier,@,@</p>
+        <p>eg3) erie county medical center,@,@</p>
+        <p>,H09100,462 Grider Street,Buffalo,NY,14215</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Items -->
+  <div
+    style="
+      display: grid;
+      grid-column: span 2;
+      grid-template-columns: repeat(10, minmax(10%, 1fr));
+      gap: 2rem;
+      width: 100%;
+      box-sizing: border-box;
+      padding: 1rem;
+    "
+  >
+    <div
+      style="
+        display: flex;
+        justify-items: center;
+        align-items: center;
+        grid-column: span 2;
+      "
+    >
+      <label for="addChangeDeleteItems">Add/Change/Delete:</label>
+      <select id="addChangeDeleteItems" name="addChangeDeleteItems">
+        <option value="AI">Add Item</option>
+        <option value="CT">Change Dates</option>
+        <option value="PC">Price Change</option>
+      </select>
+    </div>
+
+    <div
+      style="
+        display: flex;
+        flex-direction: column;
+        gap: 2px;
+        width: 75%;
+        justify-items: center;
+        align-items: center;
+        grid-column: span 8;
+      "
+    >
+      <div style="display: flex; justify-items: center; align-items: end">
+        <label for="items">Items:</label>
+        <textarea id="items" rows="10" cols="60"></textarea>
+      </div>
+      <div style="font-size: smaller"></div>
+    </div>
+  </div>
+
+  <div
+    style="
+      display: flex;
+      gap: 5px;
+      width: 100%;
+      justify-items: center;
+      align-items: center;
+    "
+  >
+    <button type="button" id="generateEDI">Generate EDI</button>
+    <button type="button" id="save">Save</button>
+  </div>
+</form>
+
+<div>
+  ("PREMIER", "50GWCWP00"); ("HEALTHTRUST", "00000000"); ("AMERINET COURTESY",
+  "00000000"); ("VIZIENT", "M1ME0E100"); ("NORTHWELL", "00000000");
+  ("MEDIGROUP", "00000000"); ("MEDASSETS", "M1ME0E100"); ("MAGNET", "00000000");
+  ("APTITUDE", "00000000");
+</div>
+
+<script src="/static/script.js"></script>
+{% endblock %}
