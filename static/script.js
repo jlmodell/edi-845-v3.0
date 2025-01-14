@@ -79,7 +79,7 @@ function parseEligible() {
     if (gpoOrEndUserValue === "BG") {
       const endUserLine = `N1*BG*${endUserName}*21*${buyingGroupMap.get(
         endUserName
-      )}`;
+      )}@`;
 
       mapped.push(endUserLine);
     } else {
@@ -89,18 +89,18 @@ function parseEligible() {
       const endUserState = endUserArray[6].trim().toUpperCase();
       const endUserZip = endUserArray[7].trim().toUpperCase();
 
-      const endUserLine = `N1*EB*${endUserName}*91*${endUserID}`;
-      const endUserN3Line = `N3*${endUserAddr}`;
-      const endUserN4Line = `N4*${endUserCity}*${endUserState}*${endUserZip}`;
+      const endUserLine = `N1*EB*${endUserName}*91*${endUserID}@`;
+      const endUserN3Line = `N3*${endUserAddr}@`;
+      const endUserN4Line = `N4*${endUserCity}*${endUserState}*${endUserZip}@`;
 
       mapped.push(endUserLine);
       mapped.push(endUserN3Line);
       mapped.push(endUserN4Line);
     }
 
-    const refTDLine = `REF*TD*${addChangeDeleteValue}`;
-    const dtm129Line = `DTM*129*${endUserEffectiveDate}`;
-    const dtm130Line = `DTM*130*${endUserExpirationDate}`;
+    const refTDLine = `REF*TD*${addChangeDeleteValue}@`;
+    const dtm129Line = `DTM*129*${endUserEffectiveDate}@`;
+    const dtm130Line = `DTM*130*${endUserExpirationDate}@`;
 
     mapped.push(refTDLine);
     mapped.push(dtm129Line);
@@ -139,12 +139,12 @@ function parseItems() {
       itemPrice = itemPrice + ".00";
     }
 
-    const pad = `PAD*${count}**${addChangeDeleteItemsValue}`;
-    const pid = `PID*F****${itemDesc}`;
-    const dtm131 = `DTM*131*${contractStartDateStr}`;
-    const dtm132 = `DTM*132*${contractEndDateStr}`;
-    const lin = `LIN*${count}*MG*${itemID}`;
-    const ctp = `CTP*DI*CON*${itemPrice}`;
+    const pad = `PAD*${count}**${addChangeDeleteItemsValue}@`;
+    const pid = `PID*F****${itemDesc}@`;
+    const dtm131 = `DTM*131*${contractStartDateStr}@`;
+    const dtm132 = `DTM*132*${contractEndDateStr}@`;
+    const lin = `LIN*${count}*MG*${itemID}@`;
+    const ctp = `CTP*DI*CON*${itemPrice}@`;
 
     mapped.push(pad);
     mapped.push(pid);
@@ -213,35 +213,35 @@ function generateEDI() {
     receiverQualifier.value
   }*${receiverId.value.padEnd(15)}*${dateStr}*${timeStr}*U*00401*${
     isaID.value
-  }*0*P*~`;
+  }*0*P*~@`;
 
   const gsLine = `GS*PA*${senderId.value}*${
     receiverId.value == "943561654" ? "HS845" : receiverId.value
-  }*${fullYearDateStr}*${timeStr}*${gsID.value}*X*004010`;
+  }*${fullYearDateStr}*${timeStr}*${gsID.value}*X*004010@`;
 
-  const stLine = `ST*845*${stID.value}`;
+  const stLine = `ST*845*${stID.value}@`;
 
   const bpaLine = `BPA*${bpa.value}*${fullYearDateStr}${
-    receiverId.value == "943561654" ? "" : "*ZZ*GPO"
+    receiverId.value == "943561654" ? "@" : "*ZZ*GPO@"
   }`;
 
   const conLine = `CON*CT*${contract.value}*${
-    receiverId.value == "943561654" ? "VA" : "OC"
+    receiverId.value == "943561654" ? "VA@" : "OC@"
   }`;
 
-  const refCTLine = "REF*CT*LOI";
-  const refBCLine = `REF*BC*${contract.value}`;
-  const refDTM092 = `DTM*092*${contractStartDateStr}`;
-  const refDTM093 = `DTM*093*${contractEndDateStr}`;
+  const refCTLine = "REF*CT*LOI@";
+  const refBCLine = `REF*BC*${contract.value}@`;
+  const refDTM092 = `DTM*092*${contractStartDateStr}@`;
+  const refDTM093 = `DTM*093*${contractEndDateStr}@`;
 
-  const senderN1 = `N1*MF*BUSSE HOSPITAL DISPOSABLES*UL*0849233000001`;
+  const senderN1 = `N1*MF*BUSSE HOSPITAL DISPOSABLES*UL*0849233000001@`;
 
   const eligibleBuyers = parseEligible();
 
   const items = parseItems();
   const count = items.pop();
 
-  const cttLine = `CTT*${count}`;
+  const cttLine = `CTT*${count}@`;
 
   const isaGsSt = [isaLine, gsLine, stLine];
 
@@ -270,11 +270,11 @@ function generateEDI() {
     console.table(i, body[i]);
   }
 
-  const seLine = `SE*${body.length + 2}*${stID.value}`;
+  const seLine = `SE*${body.length + 2}*${stID.value}@`;
 
-  const geLine = `GE*1*${gsID.value}`;
+  const geLine = `GE*1*${gsID.value}@`;
 
-  const ieaLine = `IEA*1*${isaID.value}`;
+  const ieaLine = `IEA*1*${isaID.value}@`;
 
   const seGeIea = [seLine, geLine, ieaLine];
 
@@ -326,3 +326,33 @@ window.onload = initializeIDs;
 
 // Add event listener to the Generate ISA button
 document.getElementById("generateEDI").addEventListener("click", generateEDI);
+
+/** #save => save #output.value to clipboard */
+
+function copyToClipboard() {
+  generateEDI();
+  const output = document.getElementById("output");
+  output.select();
+  document.execCommand("copy");
+}
+
+document.getElementById("save").addEventListener("click", copyToClipboard);
+
+/** #saveToDisk => create a text document blob and save to local disk of #output.value */
+
+function saveToDisk() {
+  generateEDI();
+  const output = document.getElementById("output").value;
+  const contractId = document.getElementById("contract").value;
+  const blob = new Blob([output], { type: "text/plain" });
+  const url = URL.createObjectURL(blob);
+
+  const bpaValue = document.getElementById("bpa").value;
+
+  const a = document.createElement("a");
+  a.href = url;
+  a.download = `${contractId}${bpaValue === "00" ? "" : "_ext"}.edi`;
+  a.click();
+}
+
+document.getElementById("saveToDisk").addEventListener("click", saveToDisk);
